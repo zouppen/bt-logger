@@ -11,11 +11,19 @@ if __name__ == "__main__":
     text = pipe.communicate()[0];
 
     pat = re.compile(r"^\t(..:..:..:..:..:..)\t(.*)$")
-    bd_entries = []
+    sql_entries = []
+
+    # We need a temporary table for this raw data
+    sql_entries.append("CREATE TEMPORARY TABLE log (hwaddr char(17), name text);")
+    
     for line in text.splitlines():
         matchs = re.match(pat, line)
         if matchs is None:
             continue
-        bd_entries.append("insert into log (hwaddr,name) values('%s','%s');"
+        sql_entries.append("insert into log (hwaddr,name) values('%s','%s');"
                           % (sqlesc(matchs.group(1)), sqlesc(matchs.group(2))))
-    print("".join(bd_entries))
+
+    # Propagate temporary table contents to right tables
+    sql_entries.append("CALL update_tables;")
+    
+    print("".join(sql_entries))
