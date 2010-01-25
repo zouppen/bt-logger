@@ -15,11 +15,13 @@ CREATE TABLE IF NOT EXISTS `visitor` (
 );
 
 -- Stores names of Bluetooth devices
-CREATE TABLE IF NOT EXISTS `device` (
+CREATE TABLE `device` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `hwaddr` char(17) NOT NULL,
   `name` text,
-  `changed` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  PRIMARY KEY  (`hwaddr`),
+  `changed` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `hwaddr` (`hwaddr`),
   KEY `name` (`name`(10))
 );
 
