@@ -3,24 +3,43 @@ CREATE DATABASE bluetooth;
 USE bluetooth;
 
 -- Stores information about visitors
-CREATE TABLE IF NOT EXISTS `visitor` (
-  `id` int(11) NOT NULL auto_increment,
+CREATE TABLE `visitor` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `hwaddr` char(17) NOT NULL,
-  `jointime` datetime default NULL,
-  `leavetime` datetime default NULL,
-  PRIMARY KEY  (`id`),
+  `jointime` datetime DEFAULT NULL,
+  `leavetime` datetime DEFAULT NULL,
+  `status` enum('old','new','updated') NOT NULL DEFAULT 'new',
+  PRIMARY KEY (`id`),
   KEY `hwaddr` (`hwaddr`),
   KEY `joins` (`jointime`),
-  KEY `leaves` (`leavetime`)
+  KEY `leaves` (`leavetime`),
+  KEY `status` (`status`)
 );
 
 -- Stores names of Bluetooth devices
-CREATE TABLE IF NOT EXISTS `device` (
+CREATE TABLE `device` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `hwaddr` char(17) NOT NULL,
   `name` text,
-  `changed` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  PRIMARY KEY  (`hwaddr`),
-  KEY `name` (`name`(10))
+  `changed` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `status` enum('old','new','updated') NOT NULL DEFAULT 'new',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `hwaddr` (`hwaddr`),
+  KEY `name` (`name`(10)),
+  KEY `status` (`status`)
+);
+
+-- Contains device history. This should be replicated, not 'device'
+CREATE TABLE `device_history` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `hwaddr` char(17) NOT NULL,
+  `name` text,
+  `changed` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` enum('old','new') NOT NULL DEFAULT 'new',
+  PRIMARY KEY (`id`),
+  KEY `hwaddr` (`hwaddr`),
+  KEY `name` (`name`(10)),
+  KEY `status` (`status`)
 );
 
 -- Not actually needed because it's temporary but it's just a reminder
@@ -39,11 +58,35 @@ BEGIN
 			    	  	     	    WHERE leavetime IS NULL));
 
 	UPDATE visitor SET leavetime=now()
-	       	       WHERE hwaddr NOT IN (select hwaddr from log);
+	       	       WHERE leavetime IS NULL AND 
+		       	     hwaddr NOT IN (select hwaddr from log);
 
 	INSERT device (hwaddr,name) SELECT hwaddr,name FROM log
 	       	      ON DUPLICATE KEY UPDATE name=values(name);
 
 	TRUNCATE TABLE log;
+END|
+DELIMITER ;
+
+-- Updates status column if data has changed.
+-- Used in updating of the "multiple master" replication flag.
+DELIMITER |
+CREATE TRIGGER st_visitor BEFORE UPDATE ON visitor FOR EACH ROW
+BEGIN
+	IF OLD.status = 'old' THEN
+		SET NEW.status = 'updated';
+	END IF;
+END|
+DELIMITER ;
+
+-- Inserts previous values to historical table if current data has changed.
+-- Used in updating of the replication flag, too.
+DELIMITER |
+CREATE TRIGGER update_device BEFORE UPDATE ON device FOR EACH ROW
+BEGIN
+	IF OLD.status = 'old' THEN
+		SET NEW.status = 'updated';
+	END IF;
+	INSERT INTO device_history (hwaddr,name,changed) VALUES (OLD.hwaddr, OLD.name, OLD.changed);
 END|
 DELIMITER ;
