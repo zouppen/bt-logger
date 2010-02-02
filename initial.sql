@@ -2,18 +2,21 @@ CREATE DATABASE bluetooth;
 
 USE bluetooth;
 
--- Stores information about visitors
+-- REMEMBER to change the respective table layout in master server
+-- if you do alter these tables. Otherwise the world will end to flames.
+
+-- Stores information about visitors.
 CREATE TABLE `visitor` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `hwaddr` char(17) NOT NULL,
   `jointime` datetime DEFAULT NULL,
   `leavetime` datetime DEFAULT NULL,
-  `status` enum('old','new','updated') NOT NULL DEFAULT 'new',
+  `fresh` TINYINT NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`),
   KEY `hwaddr` (`hwaddr`),
   KEY `joins` (`jointime`),
   KEY `leaves` (`leavetime`),
-  KEY `status` (`status`)
+  KEY `fresh` (`fresh`)
 );
 
 -- Stores names of Bluetooth devices
