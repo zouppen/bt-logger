@@ -1,0 +1,6 @@
+<?php
+$mysql_host = 'localhost';
+$mysql_user = 'bluetooth';
+$mysql_password = 'mypass';
+$mysql_dbname = 'bluetooth';
+?>
