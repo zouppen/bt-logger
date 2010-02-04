@@ -3,14 +3,11 @@
 /**
  * Returns error message
  */
-function errorexit($msg) {
-  // extra debug
-  global $sth;
-  global $dbh;
-  print_r($sth->errorInfo());
-  print_r($dbh->errorInfo());
-  
-  print("error: ".$msg."\n");
-  exit(0);
+function errorexit($msg, $e = NULL) {
+	// extra debug
+	if (!is_null($e)) print('raw error: '.$e->getMessage()."\n");
+				
+	print("error: ".$msg."\n");
+	exit(0);
   }
 
