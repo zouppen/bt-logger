@@ -6,7 +6,7 @@ CREATE TABLE `site_credential` (
   `description` text,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `ip` (`ip`)
-) DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 -- Master visitor database.
@@ -21,7 +21,7 @@ CREATE TABLE `visitor` (
   KEY `hwaddr` (`hwaddr`),
   KEY `joins` (`jointime`),
   KEY `leaves` (`leavetime`)
-) DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 -- Master device database. Stores names of Bluetooth devices found.
@@ -33,7 +33,7 @@ CREATE TABLE `device` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `hwaddr` (`hwaddr`),
   KEY `name` (`name`(10))
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 -- This mammoth procedure syncs a given database to the master tables

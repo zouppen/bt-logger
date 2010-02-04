@@ -17,7 +17,7 @@ CREATE TABLE `visitor` (
   KEY `joins` (`jointime`),
   KEY `leaves` (`leavetime`),
   KEY `fresh` (`fresh`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Stores names of Bluetooth devices
 CREATE TABLE `device` (
@@ -30,7 +30,7 @@ CREATE TABLE `device` (
   UNIQUE KEY `hwaddr` (`hwaddr`),
   KEY `name` (`name`(10)),
   KEY `fresh` (`fresh`)
-) DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Contains device history. This should be replicated, not 'device'
 CREATE TABLE `device_history` (
@@ -43,7 +43,7 @@ CREATE TABLE `device_history` (
   KEY `hwaddr` (`hwaddr`),
   KEY `name` (`name`(10)),
   KEY `fresh` (`fresh`)
-) DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Not actually needed because it's temporary but it's just a reminder
 CREATE TEMPORARY TABLE `log` (
