@@ -19,12 +19,13 @@ CREATE TABLE `visitor` (
   KEY `fresh` (`fresh`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
 -- Stores names of Bluetooth devices
 CREATE TABLE `device` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `hwaddr` char(17) CHARACTER SET latin1 NOT NULL,
-  `name` text CHARACTER SET latin1,
-  `changed` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `hwaddr` char(17) NOT NULL,
+  `name` mediumtext,
+  `changed` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `fresh` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `hwaddr` (`hwaddr`),
@@ -32,11 +33,12 @@ CREATE TABLE `device` (
   KEY `fresh` (`fresh`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
 -- Contains device history. This should be replicated, not 'device'
 CREATE TABLE `device_history` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `hwaddr` char(17) CHARACTER SET latin1 NOT NULL,
-  `name` text CHARACTER SET latin1,
+  `hwaddr` char(17) NOT NULL,
+  `name` mediumtext,
   `changed` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `fresh` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`),
@@ -44,6 +46,7 @@ CREATE TABLE `device_history` (
   KEY `name` (`name`(10)),
   KEY `fresh` (`fresh`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 -- Not actually needed because it's temporary but it's just a reminder
 CREATE TEMPORARY TABLE `log` (
@@ -65,7 +68,7 @@ BEGIN
 		       	     hwaddr NOT IN (select hwaddr from log);
 
 	INSERT device (hwaddr,name) SELECT hwaddr,name FROM log
-	       	      ON DUPLICATE KEY UPDATE name=values(name);
+	       	      ON DUPLICATE KEY UPDATE name=values(name), changed=now();
 
 	TRUNCATE TABLE log;
 END|
@@ -76,7 +79,9 @@ DELIMITER ;
 DELIMITER |
 CREATE TRIGGER st_visitor BEFORE UPDATE ON visitor FOR EACH ROW 
 BEGIN
-	SET NEW.fresh = 1;
+	IF OLD.fresh = 0 THEN
+		SET NEW.fresh = 1;
+	END IF;	
 END|
 DELIMITER ;
 
@@ -85,7 +90,9 @@ DELIMITER ;
 DELIMITER |
 CREATE TRIGGER update_device BEFORE UPDATE ON device FOR EACH ROW
 BEGIN
-	SET NEW.fresh = 1;
+	IF OLD.fresh = 0 THEN
+		SET NEW.fresh = 1;
+	END IF;	
 	IF OLD.name != NEW.name THEN
 		INSERT INTO device_history (hwaddr,name,changed) VALUES (OLD.hwaddr, OLD.name, OLD.changed);
 	END IF;
