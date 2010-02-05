@@ -46,6 +46,13 @@ CREATE TABLE `friend` (
   UNIQUE KEY `hwaddr` (`hwaddr`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- Public sites and their names. Only these are shown to anonymous
+-- viewers.
+CREATE TABLE `site_public` (
+  `id` int(11) NOT NULL,
+  `name` text,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Views for anonymous user
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY
