@@ -151,4 +151,4 @@ catch (Exception $e) {
 		  'your data is probably corrupted on the master side.',$e);
 }
 
-print("succeess: ok.\n");
+print("success: ok.\n");
