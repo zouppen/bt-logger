@@ -9,7 +9,7 @@ CREATE TABLE `site_credential` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- Master visitor database.
+-- Master visitor table.
 CREATE TABLE `visitor` (
   `site` int(11) NOT NULL,
   `id` int(11) NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE `visitor` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- Master device database. Stores names of Bluetooth devices found.
+-- Master device table. Stores names of Bluetooth devices found.
 CREATE TABLE `device` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `hwaddr` char(17) NOT NULL,
@@ -34,3 +34,26 @@ CREATE TABLE `device` (
   UNIQUE KEY `hwaddr` (`hwaddr`),
   KEY `name` (`name`(10))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+-- Public device table, used to limit anonymous access to certain
+-- devices only.
+CREATE TABLE `friend` (
+  `id` int(11) NOT NULL auto_increment,
+  `hwaddr` char(17) NOT NULL,
+  `nick` text,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `hwaddr` (`hwaddr`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+-- Views for anonymous user
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY
+DEFINER VIEW `visitor_public` AS select `friend`.`id` AS
+`id`,`visitor`.`jointime` AS `jointime`,`visitor`.`leavetime` AS
+`leavetime` from (`friend` join `visitor`) where (`friend`.`hwaddr` =
+`visitor`.`hwaddr`);
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY
+DEFINER VIEW `device_public` AS select `friend`.`id` AS
+`id`,`friend`.`nick` AS `nick` from `friend`;
