@@ -49,7 +49,7 @@ $sth->closeCursor();
  */
 
 $sth = $dbh->prepare("
-	SELECT nick,sec_to_time(sum(time_to_sec(timediff(leavetime,jointime)))) as total,
+	SELECT nick,sec_to_time(sum(time_to_sec(timediff(coalesce(leavetime,utc_timestamp()),jointime)))) as total,
 	       convert_tz((select leavetime from visitor_public as v2
 			   where v2.id=v.id order by leavetime desc limit 1),
 			   'UTC','Europe/Helsinki') as last_visit
@@ -78,7 +78,10 @@ $sth->closeCursor();
 
 ?>
 
-<p>Täällä ovat näkyvillä vain niiden henkilöiden tiedot, jotka ovat antaneet suostumuksensa. Suostumuksen saa annettua kirjoittamalla irkkiin Zouppen -nimimerkille.</p>
+<p>Täällä ovat näkyvillä vain niiden henkilöiden tiedot, joiden
+Bluetooth-kännykkä on haettavissa ja he ovat antaneet suostumuksensa tietojen
+käyttöön tällä sivulla.
+Suostumuksen saa annettua kirjoittamalla irkkiin Zouppen -nimimerkille.</p>
 
   <p><a href="simple_stats.phps" title="lähdekoodit">Tutustu lähdekoodiin</a> ja kokeile myös itse yhdistää tietokantaan palvelimella <tt>zouppen.iki.fi</tt>. Koneelle pääsee mm. yliopiston www-palvelimelta käsin ja osoitteista, jotka on ilmoitettu Zouppenille.</p>
 
