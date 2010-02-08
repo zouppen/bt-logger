@@ -6,6 +6,14 @@ header('Content-Type: text/html; charset=UTF-8');
 <head>
 <link rel="stylesheet" href="basic.css" type="text/css" />
 <title>Kattilassa vierailleita</title>
+<script type="text/javascript" src="jquery.min.js"></script>
+<script type="text/javascript" src="jquery.tablesorter.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+  $("table").tablesorter({sortList: [[0,0]]});
+});
+</script>
+
 </head>
 <body>
 <?php // -*- coding: utf-8 -*-
@@ -36,12 +44,12 @@ print('<h1>Kattilassa tällä hetkellä</h1>');
 if ($row === FALSE) {
   print('<p>Kattilassa ei tällä hetkellä ole ketään, joka haluaa tietonsa näkyvän.</p>');
  } else {
-  print('<table><tr><th>Nick</th><th>Saapui</th></tr>');
+  print('<table><thead><tr><th>Nick</th><th>Saapui</th></tr></thead><tbody>');
   do {
     print('<tr><td>'.htmlspecialchars($row->nick).
 	  '</td><td>'.htmlspecialchars($row->jointime).'</td></tr>');
   } while (($row = $sth->fetchObject()) !== FALSE);
-  print('</table>');
+  print('</tbody></table>');
  }
 $sth->closeCursor();
 
@@ -67,13 +75,13 @@ print('<h1>Henkilöiden vierailut Kattilassa</h1>');
 if ($row === FALSE) {
   print('<p>Kanta on tyhjä.</p>');
  } else {
-  print('<table><tr><th>Nick</th><th>Yhteensä paikalla</th><th>Lähti viimeksi</th></tr>');
+  print('<table><thead><tr><th>Nick</th><th>Yhteensä paikalla</th><th>Lähti viimeksi</th></tr></thead><tbody>');
   do {
     print('<tr><td>'.htmlspecialchars($row->nick).'</td>'.
 	  '<td>'.htmlspecialchars($row->total).'</td>'.
 	  '<td>'.htmlspecialchars($row->last_visit).'</td></tr>');
   } while (($row = $sth->fetchObject()) !== FALSE);
-  print('</table>');
+  print('</tbody></table>');
  }
 $sth->closeCursor();
 
