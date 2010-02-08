@@ -1,3 +1,15 @@
 table, th, td {
     border: thin solid black;
 }
+
+th, td {
+    padding: 3px;
+}
+
+th.headerSortUp:after {
+    content: " \2193";
+}
+
+th.headerSortDown:after {
+    content: " \2191";
+}
