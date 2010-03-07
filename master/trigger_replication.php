@@ -151,4 +151,13 @@ catch (Exception $e) {
 		  'your data is probably corrupted on the master side.',$e);
 }
 
+/**
+ * Launch the IRC bot trigger. FIXME: Hard coded path names.
+ */
+$bot_pid = intval(file_get_contents("/var/lib/kattilabotti/kattilabot.pid"));
+if (! posix_kill($bot_pid, 12)) { // SIGUSR2
+	errorexit('The data went ok but the triggers failed. IRC and others '.
+		  'may have not been updated.');
+}
+
 print("success: ok.\n");
