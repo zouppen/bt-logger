@@ -2,6 +2,11 @@
 Bluetooth logger
 ================
 
+**THIS PROJECT HAS BEEN ARCHIVED.** It relied on discoverable Bluetooth which
+hasn't been available since Android phones came. It's a product of the Nokia
+age. Nowadays better approach is to monitor DHCP leases in a WLAN network.
+See `Visitors project`_.
+
 Description
 ===========
 
@@ -46,3 +51,5 @@ Running
 You can run this in cron or in other periodic facility with the following line::
 
    python log.py | mysql -h my_host -u my_user --password=my_pass my_db
+
+.. _Visitors project: https://github.com/HacklabJKL/visitors/
