@@ -18,18 +18,20 @@ MySQL
 
 Create a new database. If you want to call the database 'bluetooth', you
 can setup initial tables simply from 'misc/initial.sql'. On the
-database server, run:
+database server, run::
 
-$ mysql -u root -p <initial.sql
+   $ mysql -u root -p <initial.sql
 
 Then open MySQL console. Make a new user with all the needed privileges.
-Type in the following (remember to change user, host and password):
+Type in the following (remember to change user, host and password)::
 
-$ mysql -u root -p
+   $ mysql -u root -p
 
-> CREATE USER 'user'@'host' IDENTIFIED BY 'password';
-> GRANT CREATE TEMPORARY TABLES, INSERT, EXECUTE ON `bluetooth`.* TO 'user'@'host';
-> FLUSH PRIVILEGES;
+And type::
+
+   CREATE USER 'user'@'host' IDENTIFIED BY 'password';
+   GRANT CREATE TEMPORARY TABLES, INSERT, EXECUTE ON `bluetooth`.* TO 'user'@'host';
+   FLUSH PRIVILEGES;
 
 Now your database is ready to receive Bluetooth device data.
 
@@ -41,7 +43,6 @@ This script is tested with Python 2.6. I recommend installing that version.
 Running
 =======
 
-You can run this in cron or in other periodic facility with the following line:
+You can run this in cron or in other periodic facility with the following line::
 
-python log.py | mysql -h my_host -u my_user --password=my_pass my_db
-
+   python log.py | mysql -h my_host -u my_user --password=my_pass my_db
